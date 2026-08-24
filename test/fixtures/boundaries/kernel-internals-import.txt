@@ -1,0 +1,3 @@
+// Rule 2: kernel internals are not a plugin surface — only `@/kernel` is.
+import { reduce } from '@/kernel/model/reducers';
+export const x = reduce;

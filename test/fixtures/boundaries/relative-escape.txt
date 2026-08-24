@@ -1,0 +1,4 @@
+// Rule 1: a plugin lives entirely in src/plugins/<id>/.
+import { flags } from '../../shell/flags';
+import { other } from '../other-plugin/thing';
+export const x = [flags, other];
