@@ -1,12 +1,17 @@
 name: CI
 
 on:
+  # Feature branches are covered by `pull_request`. Listing them under `push`
+  # as well runs the whole pipeline twice for every push, because the two
+  # events carry different `github.ref` values and so land in different
+  # concurrency groups.
   push:
-    branches: ['**']
+    branches: [dev, main]
   pull_request:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  # head_ref on a pull_request, ref on a push: one group per branch either way.
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
