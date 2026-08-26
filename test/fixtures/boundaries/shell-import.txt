@@ -1,0 +1,3 @@
+// Rule 2: plugins may not import the shell.
+import { flags } from '@/shell/flags';
+export const x = flags;

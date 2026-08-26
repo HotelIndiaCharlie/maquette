@@ -1,0 +1,3 @@
+// Rule 2: cross-plugin imports are a build error.
+import { bodyBlock } from '@/plugins/blocks-basic/blocks';
+export const x = bodyBlock;
