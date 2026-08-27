@@ -1,6 +1,6 @@
 ---
 title: Writing a Maquette plugin — the authoring protocol
-protocol-version: 0.2
+protocol-version: 1.0
 audience: an LLM session, working with a human, that will produce and then implement a §5 work packet
 ---
 
@@ -209,8 +209,13 @@ Then:
    ```
 5. **Run the independence and removal checks:**
    ```bash
-   pnpm verify:plugin <id>
+   pnpm verify:plugin <id> --base <the commit you started this plugin from>
    ```
+   Pass `--base` explicitly, pointing at your own session's actual starting commit —
+   **not** a SHA copied from an earlier handover. A hardcoded SHA is only valid until the
+   next toolkit or docs commit lands on the same branch, which can happen before the
+   plugin session that was told to use it even starts (found running B1's own handover
+   instructions verbatim: `docs/adr/006`).
 6. **Run the human test script yourself,** step by step, in a browser. Steps that cannot
    be performed as written are packet bugs — fix the packet, not just the code.
 7. **Amend this protocol from what hurt.** Every blank the template failed to elicit,
@@ -231,3 +236,21 @@ Then:
 - Your Mini/Full views render inside a box the `BlockLayer` has already sized, positioned
   and set to `overflow: hidden`. Fill it (`size-full`); do not position yourself.
 - The `example` plugin is **never** in `PLUGIN_LIST`. Do not "fix" that omission.
+- **Testing an Inspector, overlay, or panel that renders a vendored Radix control** (any
+  `@/components/ui/*` that measures its own size, or that supports pointer-driven drag —
+  `slider` is the one found so far): jsdom implements neither `ResizeObserver` nor pointer
+  capture. Rendering one in a vitest test throws `ResizeObserver is not defined` at mount,
+  and dragging one throws `target.hasPointerCapture is not a function` on the first
+  `pointerdown`. Both are stubbed globally in `test/setup.ts` — you do not need to
+  reproduce the workaround, but a real gesture test still needs its own
+  `Element.prototype.getBoundingClientRect` stub (jsdom returns all-zero rects, and Radix's
+  slider computes its value from pointer position against that rect) and
+  `IS_REACT_ACT_ENVIRONMENT = true` before rendering. See
+  `src/plugins/blocks-basic/blocks-basic.test.tsx` for a worked example of driving a real
+  drag-then-release gesture and asserting the resulting log length.
+- **A no-op commit is usually unreachable through the real widget, not just discouraged.**
+  Radix's `Slider` already suppresses `onValueCommit` internally when a drag nets back to
+  its start value, so a packet's "a commit equal to the current value dispatches nothing"
+  rule is defense-in-depth you cannot prove by driving the slider back to where it started
+  — nothing fires either way. Test the guard as a small pure function instead (see
+  `resolveCommit` in `src/plugins/blocks-basic/TypeInspector.tsx`), not through the widget.

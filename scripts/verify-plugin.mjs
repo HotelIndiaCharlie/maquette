@@ -32,6 +32,18 @@ const LOAD_LIST = 'src/shell/plugins.ts';
  * is allowed alongside the one load-list line, and nothing else is.
  */
 const packetFor = (id) => `docs/packets/${id}.md`;
+/**
+ * The session handover that briefed this plugin's implementation, if any —
+ * `docs/handover/NNN-<slug>.md`, numbered, with the plugin id somewhere in
+ * the slug (e.g. `003-b1-blocks-basic.md` for `blocks-basic`). Found by B1's
+ * own first run: it is the doc a human hands the implementing session, not
+ * code the plugin depends on, so rule 5 does not mean to flag it either — but
+ * only `docs/packets/<id>.md` was ever allow-listed, so this was a rule-5
+ * false positive on the very first honest run of this command (see docs/adr/
+ * 006's "Amendments from implementing B1").
+ */
+const isHandoverFor = (id, path) =>
+  /^docs\/handover\/.*\.md$/.test(path) && path.toLowerCase().includes(id.toLowerCase());
 
 function die(msg) {
   console.error(`\n✗ ${msg}\n`);
@@ -104,7 +116,9 @@ if (!base) {
   );
 
   const allowed = new Set([LOAD_LIST, packetFor(id)]);
-  const strays = [...touched].filter((f) => !f.startsWith(`${folder}/`) && !allowed.has(f)).sort();
+  const strays = [...touched]
+    .filter((f) => !f.startsWith(`${folder}/`) && !allowed.has(f) && !isHandoverFor(id, f))
+    .sort();
 
   if (strays.length > 0) {
     independence = false;
@@ -117,9 +131,12 @@ if (!base) {
         '     re-run with --base pointing at this plugin\'s own branch point.)',
     );
   } else {
+    const extra = [packetFor(id), ...[...touched].filter((f) => isHandoverFor(id, f))].filter((f) =>
+      touched.has(f),
+    );
     console.log(
       `  ✓ independence — nothing outside ${folder}/ except ${LOAD_LIST}` +
-        (touched.has(packetFor(id)) ? ` and ${packetFor(id)}` : ''),
+        (extra.length > 0 ? ` and ${extra.join(', ')}` : ''),
     );
   }
 

@@ -1,5 +1,5 @@
 ---
-packet-template-version: 0.2
+packet-template-version: 1.0
 shape: SPEC.md §5 — exactly eight parts, no more
 ---
 
@@ -82,7 +82,10 @@ plugin that draws your surface (a view, a tool, the panel dock) has not been bui
 your human test script is unperformable and part 6's boot check is vacuous. Either
 register your own playground view — SPEC.md §1 makes the playground arena "central
 product surface, not side rooms" — or say here, explicitly, which later plugin your
-visual acceptance waits on and what covers it in the meantime.
+visual acceptance waits on and what covers it in the meantime. A synthetic `Spread` built
+for a playground view needs a `cols` field too — `DEFAULT_COLS` (`@/kernel`) is the
+answer; list it in *Consumes* rather than leaving the implementer to invent a number
+(found building B1's playground, docs/adr/006).
 
 ---
 
