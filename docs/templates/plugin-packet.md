@@ -1,5 +1,5 @@
 ---
-packet-template-version: 0.1
+packet-template-version: 0.2
 shape: SPEC.md §5 — exactly eight parts, no more
 ---
 
@@ -77,6 +77,13 @@ amendment` entry per missing API, each with the demonstrated need.*
 *Write "none" against a registry you do not touch. Do not delete the row — an empty row
 is evidence you considered it.*
 
+**Can this plugin be seen at all with only itself loaded?** Check the load list. If the
+plugin that draws your surface (a view, a tool, the panel dock) has not been built yet,
+your human test script is unperformable and part 6's boot check is vacuous. Either
+register your own playground view — SPEC.md §1 makes the playground arena "central
+product surface, not side rooms" — or say here, explicitly, which later plugin your
+visual acceptance waits on and what covers it in the meantime.
+
 ---
 
 ## 4. Behavior — every number stated
@@ -112,7 +119,15 @@ gesture — say what "completed" means for each gesture here.*
 
 *Ranges, steps, minimums, what clamps and what refuses. Numbers, not adjectives.*
 
-### 4.6 Fidelity
+### 4.6 Conflicts in the source spec
+
+*Where the plugin's own §7/§8 paragraph contradicts SPEC.md §3, `tokens.css`, or another
+rule — and which one wins, with the reason. Two examples that really occur: type that
+§7 puts on paper but §3 keeps off it, and a caption §7 wants at a size the only matching
+token forbids on paper. Write "none found" if there are none, but look first: an
+unrecorded conflict gets silently resolved by the implementer, differently each time.*
+
+### 4.7 Fidelity
 
 *Does any surface show **measured** text — anything derived from `measure()` shown to
 the reader (a fill %, an overflow state, a line count)? If yes, `FidelityBadge` is

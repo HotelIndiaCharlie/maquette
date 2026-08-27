@@ -108,6 +108,33 @@ B1 and every plugin after it **are** features and obey rule 3 exactly.
   that plugin; the session that implements it amends the template and the protocol from
   what actually hurt, and stamps v1.0.
 
+## Amendments from the first live run (B1 interview, template v0.2 / protocol v0.2)
+
+`docs/packets/blocks-basic.md` was produced by running this protocol against SPEC.md §7
+B1. The interview — not the template — surfaced three things the template had no slot
+for. They are now in it:
+
+1. **Load-order testability.** With `PLUGIN_LIST = [blocksBasic]` there is no tool, no
+   flatplan and no spread editor, so the shell falls through to the placeholder and
+   nothing renders: §7's B1 human test was unperformable as written. Built-ins are
+   implemented in order, so every early one has this problem. The template's *Registers*
+   section now asks it outright, and B1 answers it by registering one synthetic,
+   read-only playground view (SPEC.md §1 blesses the playground as product surface).
+2. **Self-conflicts in SPEC.md.** §7 B1 puts *bold sans* and a *micro-caption* on paper;
+   §3 keeps UI type off paper and `tokens.css` says the micro-type tokens are "never used
+   on paper". Both are real, both resolvable, both would otherwise be resolved silently
+   and differently by each implementer. Behaviour §4.6 of the template now records them.
+3. **Packet shape.** The first draft of B1's packet grew a ninth part for those conflicts.
+   SPEC.md §5 says *exactly* eight. Folded back into part 4, and the protocol now says so.
+
+The protocol also gained three interview mechanics that made the difference in practice:
+put the API constraint in the question rather than the options, compute the numbers before
+offering them, and mark decisions you made yourself as `[CALL]` so they can be reversed
+without re-derivation.
+
+Still **v0.2, not v1.0**: no line of B1 has been implemented yet. The session that builds
+it stamps v1.0 from what hurts during implementation.
+
 ## Alternatives rejected
 
 - **A generator that also edits `src/shell/plugins.ts`.** Rejected: it hides the one line

@@ -1,6 +1,6 @@
 ---
 title: Writing a Maquette plugin — the authoring protocol
-protocol-version: 0.1
+protocol-version: 0.2
 audience: an LLM session, working with a human, that will produce and then implement a §5 work packet
 ---
 
@@ -63,6 +63,14 @@ things that, left unsaid, get built wrong.
 - **Batch questions.** Three to six at a time, grouped by topic, each with the options
   you actually see. A one-question-at-a-time interrogation exhausts the human before you
   reach the parts they most need to decide.
+- **Put the constraint in the question, not just the options.** A question that opens
+  "`BlockTypeDef.Inspector` is `FC<{block, spreadId}>` — no callback slot — and
+  `ctx.bus.transact` is synchronous, so a transaction cannot be held open across a drag"
+  gets a decision. The same question without that preamble gets a preference, and the
+  preference is often impossible. Do the API reading *before* you ask.
+- **Compute the numbers before you offer them.** "A 7 pt caption is 1.36 px at flatplan
+  scale" is a decidable fact; "the caption might be small" is not. Run the arithmetic and
+  put the result in the option text.
 - **Propose, don't ask open-endedly.** "How many bars?" gets a shrug. "Bars derived from
   leading, so a 12 pt leading gives one bar per 4.23 mm — or a fixed 6 bars regardless of
   frame height. Which?" gets a decision. Give your recommendation and say why.
@@ -82,9 +90,11 @@ Before interviewing, separate the binding from the open:
 - **`docs/plugin-api.md`** fixes what exists. Binding.
 - Everything else is open, and every open thing is your job.
 
-### The eight things packets most often get wrong
+### The ten things packets most often get wrong
 
-Push hardest here. These are in rough order of how much rework they cause.
+Push hardest here. These are in rough order of how much rework they cause. Items 9 and 10
+were added after the first live run of this protocol (B1 `blocks-basic`), where both were
+missed by the template and only surfaced because the interview kept going.
 
 1. **Numbers that were never stated.** Sweep the whole idea for adjectives — "small",
    "subtle", "a few", "appropriate", "roughly". Every one is an unasked question. SPEC.md
@@ -123,6 +133,24 @@ Push hardest here. These are in rough order of how much rework they cause.
 8. **What the plugin does *not* do.** The boundary with the next plugin. B1 owns the
    Inspector *fragment*; B5 owns the panel that hosts it. Getting this wrong builds the
    same thing twice or neither time.
+9. **Whether the plugin can be seen at all, on its own.** Ask early, before designing
+   anything: *with `PLUGIN_LIST` containing only this plugin, what does a person see?*
+   Built-ins are implemented in order, so an early one depends on views, tools and panels
+   that do not exist yet. B1 registers four block types and — until B2, B3 and B4 land —
+   nothing can draw one, nothing routes to a page showing one, and the shell falls
+   through to the placeholder. Its §7 human test was literally unperformable. The fix is
+   usually one playground view the plugin registers for itself (SPEC.md §1: the playground
+   arena is "central product surface, not side rooms"), and that view must be **synthetic
+   and read-only** — build a `Spread` object in memory, pass it to `SpreadPaper`,
+   dispatch nothing. A plugin that seeds the real document at load time to make itself
+   visible is a worse bug than the one it fixes.
+10. **Where the spec contradicts itself.** SPEC.md §7 fixes a plugin's behaviour; SPEC.md
+   §3 and `tokens.css` fix the visual language; they do not always agree. B1 alone had
+   two: §7 puts a *bold sans* headline on paper where §3 keeps UI type off it, and asks
+   for a *micro-caption* on paper where the micro-type tokens say "never used on paper".
+   Both are real, both are resolvable, and both get silently resolved — differently each
+   time — if the packet does not name them. Read the plugin's §7 paragraph word by word
+   against §3 and `tokens.css`, and record every clash with the winner and the reason.
 
 ### Ending the interview
 
@@ -144,6 +172,14 @@ Copy `docs/templates/plugin-packet.md` to `docs/packets/<plugin-id>.md` and fill
 - Cross-check *Consumes* against `docs/plugin-api.md` symbol by symbol. Anything not in
   that doc is a `BLOCKED` entry, not a hopeful import.
 - Read part 4 back once, hunting adjectives. Any that survive are unfinished interviews.
+- **Eight parts, not nine.** SPEC.md §5 says *exactly* those eight. Material that wants
+  its own section — spec conflicts, open questions — goes inside part 4, not after part 8.
+- **Mark anything you decided yourself.** Where you made a call rather than asking, say so
+  in place (`[CALL]`) with the reasoning and the alternative. The implementing session can
+  then reverse it without re-deriving why it exists, and a reviewer can see the difference
+  between a decision and an assumption.
+- **Say what is deliberately not testable this lot,** and what covers it in the meantime.
+  Otherwise the implementer reads a missing check as a missing feature.
 
 Show the human the filled packet before implementing. It is faster to be wrong on this
 page than in the code.
