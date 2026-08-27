@@ -26,6 +26,12 @@ const skipRemoval = argv.includes('--skip-removal');
 const baseArg = argv.includes('--base') ? argv[argv.indexOf('--base') + 1] : null;
 
 const LOAD_LIST = 'src/shell/plugins.ts';
+/**
+ * The plugin's own §5 work packet. `pnpm new:plugin` writes it, and rule 5 is
+ * about code independence, not about the spec that describes the code — so it
+ * is allowed alongside the one load-list line, and nothing else is.
+ */
+const packetFor = (id) => `docs/packets/${id}.md`;
 
 function die(msg) {
   console.error(`\n✗ ${msg}\n`);
@@ -97,7 +103,8 @@ if (!base) {
       .filter(Boolean),
   );
 
-  const strays = [...touched].filter((f) => !f.startsWith(`${folder}/`) && f !== LOAD_LIST).sort();
+  const allowed = new Set([LOAD_LIST, packetFor(id)]);
+  const strays = [...touched].filter((f) => !f.startsWith(`${folder}/`) && !allowed.has(f)).sort();
 
   if (strays.length > 0) {
     independence = false;
@@ -110,7 +117,10 @@ if (!base) {
         '     re-run with --base pointing at this plugin\'s own branch point.)',
     );
   } else {
-    console.log(`  ✓ independence — nothing outside ${folder}/ except ${LOAD_LIST}`);
+    console.log(
+      `  ✓ independence — nothing outside ${folder}/ except ${LOAD_LIST}` +
+        (touched.has(packetFor(id)) ? ` and ${packetFor(id)}` : ''),
+    );
   }
 
   // The "one line" half of the rule.
