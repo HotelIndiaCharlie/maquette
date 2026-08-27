@@ -1,0 +1,5 @@
+// Rule 3: plugin data lives in ctx.storage(ns) sidecars.
+export function save(value: string) {
+  localStorage.setItem('sketch:strokes', value);
+  return indexedDB.databases();
+}

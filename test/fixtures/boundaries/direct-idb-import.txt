@@ -1,0 +1,3 @@
+// Rule 3: plugins never touch IndexedDB directly.
+import { set } from 'idb-keyval';
+export const x = set;

@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Maquette — daylight studio.
+   SPEC.md §3. This file is the ONLY source of style values.
+   Arbitrary values (bg-[#fff]) anywhere else are a review failure.
+   Document geometry (mm/pt) is inline style computed from the model,
+   never a class.
+   ───────────────────────────────────────────────────────────────────────── */
+@theme {
+  --color-desk: #EFEDE7;         --color-desk-deep: #E7E4DD;
+  --color-paper: #FFFFFF;        --color-surface: #FBFAF7;
+  --color-border-hairline: #DDDAD3;
+  --color-ink: #23262B;          --color-ink-soft: #6C7077;
+  --color-greek: #DADCE0;        --color-greek-dark: #ADB1B8;
+  --color-guide: #4A8FC9;        --color-guide-soft: #4A8FC94D;
+  --color-mark: #D64426;         --color-mark-soft: #D644261F;
+  --font-ui: "Inter", "Avenir Next", system-ui, sans-serif;
+  --font-serif-body: Georgia, "Times New Roman", serif;
+  --spacing-hit: 40px;           --radius-tool: 8px;
+  --shadow-paper: 0 1px 2px rgb(35 38 43 / .08), 0 10px 28px rgb(35 38 43 / .10);
+
+  /* Chrome micro-type. Added in Lot 0 because the shell needs sizes below
+     Tailwind's `text-xs`, and an arbitrary value would be a review failure
+     (SPEC.md §3). Quiet UI type only — never used on paper. */
+  --text-micro: 10px;            --text-label: 11px;
+  --tracking-caps: 0.1em;        --tracking-wordmark: 0.14em;
+
+  /* Panel dock as a bottom sheet below 760px. */
+  --spacing-sheet: 45vh;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   shadcn/ui semantic variables → our tokens. Mapped ONCE, here (SPEC.md §3).
+   primary = guide (structure/affordance), destructive = mark (human marks).
+   Vendored components in src/components/ui are restyled through these only.
+   ───────────────────────────────────────────────────────────────────────── */
+@theme inline {
+  --color-background: var(--color-desk);
+  --color-foreground: var(--color-ink);
+  --color-card: var(--color-surface);
+  --color-card-foreground: var(--color-ink);
+  --color-popover: var(--color-surface);
+  --color-popover-foreground: var(--color-ink);
+  --color-primary: var(--color-guide);
+  --color-primary-foreground: var(--color-paper);
+  --color-secondary: var(--color-desk-deep);
+  --color-secondary-foreground: var(--color-ink);
+  --color-muted: var(--color-desk-deep);
+  --color-muted-foreground: var(--color-ink-soft);
+  --color-accent: var(--color-desk-deep);
+  --color-accent-foreground: var(--color-ink);
+  --color-destructive: var(--color-mark);
+  --color-destructive-foreground: var(--color-paper);
+  --color-border: var(--color-border-hairline);
+  --color-input: var(--color-border-hairline);
+  --color-ring: var(--color-guide);
+  --radius-sm: calc(var(--radius-tool) - 4px);
+  --radius-md: calc(var(--radius-tool) - 2px);
+  --radius-lg: var(--radius-tool);
+  --radius-xl: calc(var(--radius-tool) + 4px);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border-hairline);
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    margin: 0;
+    background-color: var(--color-desk);
+    color: var(--color-ink);
+    font-family: var(--font-ui);
+    -webkit-font-smoothing: antialiased;
+  }
+}

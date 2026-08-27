@@ -1,0 +1,17 @@
+// A legal plugin entry: kernel public API, vendored UI, own folder only.
+import { dispatch, greek, type MaquettePlugin } from '@/kernel';
+import { Button } from '@/components/ui/button';
+import { helper } from './helper';
+
+export const plugin: MaquettePlugin = {
+  id: 'legal',
+  name: 'Legal',
+  version: '1.0.0',
+  register(ctx) {
+    void dispatch;
+    void greek;
+    void Button;
+    void helper;
+    void ctx;
+  },
+};

@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  # Feature branches are covered by `pull_request`. Listing them under `push`
+  # as well runs the whole pipeline twice for every push, because the two
+  # events carry different `github.ref` values and so land in different
+  # concurrency groups.
+  push:
+    branches: [dev, main]
+  pull_request:
+
+concurrency:
+  # head_ref on a pull_request, ref on a push: one group per branch either way.
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: typecheck → test → build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      # Plugin boundaries (SPEC.md §4.5) are ESLint rules; the fixture test in
+      # test/boundaries.test.ts fails if any of them stops catching a violation.
+      - name: Lint
+        run: pnpm lint
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+  e2e:
+    name: e2e
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run Playwright
+        run: pnpm e2e
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
