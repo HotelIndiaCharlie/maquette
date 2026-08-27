@@ -21,10 +21,11 @@
  * └───────────────────────────────────────────────────────────────────────┘
  */
 import type { MaquettePlugin } from '@/kernel';
+import { plugin as blocksBasic } from '@/plugins/blocks-basic';
 
 export const PLUGIN_LIST: ReadonlyArray<MaquettePlugin> = [
   // ── Lot 1 · built-ins (SPEC.md §7) ──────────────────────────────────────
-  // blocksBasic,
+  blocksBasic,
   // toolsBasic,
   // flatplan,
   // spreadEditor,
