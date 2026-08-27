@@ -9,6 +9,16 @@
  *
  * Lot 0: empty. The kernel with zero plugins boots — that is the litmus test
  * (SPEC.md §2).
+ *
+ * ┌───────────────────────────────────────────────────────────────────────┐
+ * │  `src/plugins/example/` IS DELIBERATELY ABSENT FROM THIS LIST.        │
+ * │  It is the permanent reference plugin: compiled and boundary-linted   │
+ * │  on every CI run so `pnpm new:plugin` scaffolds from something        │
+ * │  guaranteed to build against the real kernel — but it is a teaching   │
+ * │  artefact, not a feature, so it must never load.                      │
+ * │  Do not "fix" the omission. See docs/adr/006-plugin-authoring-        │
+ * │  toolkit.md and the header of src/plugins/example/index.ts.           │
+ * └───────────────────────────────────────────────────────────────────────┘
  */
 import type { MaquettePlugin } from '@/kernel';
 

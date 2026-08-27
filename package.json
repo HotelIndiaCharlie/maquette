@@ -13,6 +13,8 @@
     "test:watch": "vitest",
     "lint": "eslint .",
     "lint:boundaries": "node scripts/boundaries.mjs",
+    "new:plugin": "node scripts/new-plugin.mjs",
+    "verify:plugin": "node scripts/verify-plugin.mjs",
     "e2e": "playwright test"
   },
   "dependencies": {

@@ -134,8 +134,10 @@ export default tseslint.config(
     },
   },
 
+  // Node-side files: configs, tests, e2e, and the toolkit scripts behind
+  // `pnpm new:plugin` / `verify:plugin` / `lint:boundaries`.
   {
-    files: ['*.config.{ts,js}', 'e2e/**/*.ts', 'test/**/*.ts'],
+    files: ['*.config.{ts,js}', 'e2e/**/*.ts', 'test/**/*.ts', 'scripts/**/*.mjs'],
     languageOptions: { globals: { ...globals.node } },
   },
 );
